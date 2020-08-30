@@ -11,8 +11,6 @@ const amp = {
     width: 1.5
   },
   text: {
-    // anchor: 'middle',
-    // 'dominant-baseline': 'middle',
     family: 'Helvetica, sans-serif',
     style: 'italic',
     size: 15,
@@ -23,14 +21,14 @@ const amp = {
 let draw = SVG().addTo('body').size('100%', '100%');
 
 // <path xmlns="http://www.w3.org/2000/svg" d="M10 15 l15 0 l2.5 -5 l5 10 l5 -10 l5 10 l5 -10 l5 10 l2.5 -5 l15 0" stroke="black" stroke-width="1" stroke-linejoin="bevel" fill="none"/>
-function resistor(x, y, degrees, label, labelPosition) {
+function addResistor(x, y, degrees, label, labelPosition) {
   let group = draw.group().attr({ class: 'resistor' });
   
   // symbol
   let a = 6;
   let w = 3;
   let str = `M${x} ${y} l20 0 l${w/2} -${w} l${w} ${a} l${w} -${a} l${w} ${a} l${w} -${a} l${w} ${a} l${w} -${a} l${w} ${a} l${w/2} -${w} l20 0`;
-  let res = group.path(str).fill('none').stroke(amp.path);
+  group.path(str).fill('none').stroke(amp.path);
   
   // text label
   let textAttrs = labelPosition === 'bottom' && degrees === -90 ? { x: x+12, y: y+18 } : { x: x+15, y: y-10 };
@@ -53,13 +51,31 @@ const ampSpecs = {
     { x: 860, y: 350, rotate: -90, value: '470', valuePosition: 'bottom' },
     { x: 782, y: 454, rotate: 0, value: '22K', valuePosition: 'top' },
     { x: 940, y: 454, rotate: 0, value: '10K', valuePosition: 'top' }
+  ],
+  phoneJacks: [
+    { x: 270, y: 255, rotate: 0, flip: false },
+    { x: 270, y: 334, rotate: 0, flip: false },
+    { x: 1065, y: 265, rotate: 0, flip: 'x' }
   ]
 }
 
 ampSpecs.resistors.forEach(res => {
-  resistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
+  addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
 })
-// resistor(355, 255, 0, '68k', 'top');
+// addResistor(355, 255, 0, '68k', 'top');
+
+// Phone Jack
+function addPhoneJack(x, y, degrees, flip) {
+  let group = draw.group().attr({ class: 'jack' });
+  let str = `M${x} ${y} l14 14 l14 -14 l14 0`;
+  group.path(str).fill('none').stroke(amp.path);
+  group.transform({ rotate: degrees, flip: flip });
+}
+
+ampSpecs.phoneJacks.forEach(ph => {
+  addPhoneJack(ph.x, ph.y, ph.rotate, ph.flip);
+});
+// jack(270, 255, 0);
 
 // Command 	Name 	Parameters
 // M 	moveto 	(x y)+
