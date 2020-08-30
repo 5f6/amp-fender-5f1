@@ -20,7 +20,7 @@ const amp = {
 
 let draw = SVG().addTo('body').size('100%', '100%');
 
-// <path xmlns="http://www.w3.org/2000/svg" d="M10 15 l15 0 l2.5 -5 l5 10 l5 -10 l5 10 l5 -10 l5 10 l2.5 -5 l15 0" stroke="black" stroke-width="1" stroke-linejoin="bevel" fill="none"/>
+// Resistor
 function addResistor(x, y, degrees, label, labelPosition) {
   let group = draw.group().attr({ class: 'resistor' });
   
@@ -34,6 +34,14 @@ function addResistor(x, y, degrees, label, labelPosition) {
   let textAttrs = labelPosition === 'bottom' && degrees === -90 ? { x: x+12, y: y+18 } : { x: x+15, y: y-10 };
   group.plain(label).font(amp.text).attr(textAttrs);
   group.transform({ rotate: degrees });
+}
+
+// Phone Jack
+function addPhoneJack(x, y, degrees, flip) {
+  let group = draw.group().attr({ class: 'jack' });
+  let str = `M${x} ${y} l14 14 l14 -14 l14 0`;
+  group.path(str).fill('none').stroke(amp.path);
+  group.transform({ rotate: degrees, flip: flip });
 }
 
 const ampSpecs = {
@@ -59,23 +67,20 @@ const ampSpecs = {
   ]
 }
 
-ampSpecs.resistors.forEach(res => {
-  addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
-})
-// addResistor(355, 255, 0, '68k', 'top');
-
-// Phone Jack
-function addPhoneJack(x, y, degrees, flip) {
-  let group = draw.group().attr({ class: 'jack' });
-  let str = `M${x} ${y} l14 14 l14 -14 l14 0`;
-  group.path(str).fill('none').stroke(amp.path);
-  group.transform({ rotate: degrees, flip: flip });
+// Build the Amp
+function buildAmplifier() {
+  ampSpecs.resistors.forEach(res => {
+    addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
+  })
+  // addResistor(355, 255, 0, '68k', 'top');
+  
+  ampSpecs.phoneJacks.forEach(ph => {
+    addPhoneJack(ph.x, ph.y, ph.rotate, ph.flip);
+  });
+  // jack(270, 255, 0);
 }
 
-ampSpecs.phoneJacks.forEach(ph => {
-  addPhoneJack(ph.x, ph.y, ph.rotate, ph.flip);
-});
-// jack(270, 255, 0);
+buildAmplifier();
 
 // Command 	Name 	Parameters
 // M 	moveto 	(x y)+
