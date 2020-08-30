@@ -20,6 +20,13 @@ const amp = {
 
 let draw = SVG().addTo('body').size('100%', '100%');
 
+// Ground
+function addGround(x, y, wire, rotate) {
+  let group = draw.group().attr({ class: 'ground' });
+  let str = `M${x} ${y} l23 0 M${x+4} ${y+6} l15 0 M${x+8} ${y+12} l7 0 M${x+11} ${y+18} l1 0 M${x+11.5} ${y} l0 -${wire}`;
+  group.path(str).fill('none').stroke(amp.path).transform({ rotate: rotate });
+}
+
 // Resistor
 function addResistor(x, y, degrees, label, labelPosition) {
   let group = draw.group().attr({ class: 'resistor' });
@@ -37,14 +44,29 @@ function addResistor(x, y, degrees, label, labelPosition) {
 }
 
 // Phone Jack
-function addPhoneJack(x, y, degrees, flip) {
+function addPhoneJack(x, y, wire, degrees, flip) {
   let group = draw.group().attr({ class: 'jack' });
-  let str = `M${x} ${y} l14 14 l14 -14 l14 0`;
+  let str = `M${x} ${y} l14 14 l14 -14 l${wire} 0`;
   group.path(str).fill('none').stroke(amp.path);
   group.transform({ rotate: degrees, flip: flip });
 }
 
 const ampSpecs = {
+  grounds: [
+    { x: 302, y: 424, wire: 90, rotate: 0 },
+    { x: 473.3, y: 430, wire: 20, rotate: 0 },
+    { x: 610, y: 379, wire: 11, rotate: 0 },
+    { x: 668, y: 398, wire: 0, rotate: 0 },
+    { x: 744, y: 508, wire: 8, rotate: 0 },
+    { x: 798, y: 372, wire: 8, rotate: 0 },
+    { x: 871.3, y: 414, wire: 22, rotate: 0 },
+    { x: 922, y: 507, wire: 10, rotate: 0 },
+    { x: 1000, y: 507, wire: 10, rotate: 0 },
+    { x: 1035, y: 319, wire: 10, rotate: 0 },
+    { x: 627.3, y: 683, wire: 10, rotate: 0 },
+    { x: 750, y: 624, wire: 25, rotate: -90 },
+    { x: 756, y: 677, wire: 36, rotate: -90 }
+  ],
   resistors: [
     { x: 355, y: 255, rotate: 0, value: '68K', valuePosition: 'top' },
     { x: 355, y: 333, rotate: 0, value: '68K', valuePosition: 'top' },
@@ -61,26 +83,30 @@ const ampSpecs = {
     { x: 940, y: 454, rotate: 0, value: '10K', valuePosition: 'top' }
   ],
   phoneJacks: [
-    { x: 270, y: 255, rotate: 0, flip: false },
-    { x: 270, y: 334, rotate: 0, flip: false },
-    { x: 1065, y: 265, rotate: 0, flip: 'x' }
+    { x: 270, y: 255, wire: 56, rotate: 0, flip: false },
+    { x: 270, y: 333, wire: 56, rotate: 0, flip: false },
+    { x: 1065, y: 265, wire: 20, rotate: 0, flip: 'x' }
   ]
 }
 
 // Build the Amp
 function buildAmplifier() {
+  ampSpecs.grounds.forEach(g => {
+    addGround(g.x, g.y, g.wire, g.rotate);
+  })
+
   ampSpecs.resistors.forEach(res => {
     addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
   })
-  // addResistor(355, 255, 0, '68k', 'top');
   
   ampSpecs.phoneJacks.forEach(ph => {
-    addPhoneJack(ph.x, ph.y, ph.rotate, ph.flip);
+    addPhoneJack(ph.x, ph.y, ph.wire, ph.rotate, ph.flip);
   });
-  // jack(270, 255, 0);
 }
 
-buildAmplifier();
+SVG.on(document, 'DOMContentLoaded', function() {
+  buildAmplifier();
+});
 
 // Command 	Name 	Parameters
 // M 	moveto 	(x y)+
