@@ -1,0 +1,35 @@
+body {
+  /* background: #3c3c3c; */
+  background: white;
+  background-image: url(./5F1_Annotated_Schematic.gif);
+  background-position-x: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 16px;
+  height: 100vh;
+  margin: 0;
+}
+
+header {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  position: fixed;
+  text-align: center;
+  width: 100%;
+}
+
+h1 {
+  font-size: 45px;
+  margin: .65em 0 0;
+}
+
+h2 {
+  font-size: 38px;
+  margin: .05em 0 0;
+}
+
+#toggleBackground {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 1;
+}
