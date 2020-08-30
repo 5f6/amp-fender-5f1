@@ -27,6 +27,19 @@ function addGround(x, y, wire, rotate) {
   group.path(str).fill('none').stroke(amp.path).transform({ rotate: rotate });
 }
 
+// Capacitor
+function addCapacitor(x, y, wire1, wire2, label, labelPosition) {
+  // symbol
+  let group = draw.group().attr({ class: 'capacitor' });
+  let str1 = `M${x} ${y} l7 0 l0 -${wire1} l0 ${wire1} l7 0`;
+  let str2 = `M${x} ${y + 6} l7 0 l0 ${wire2} l0 -${wire2} l7 0`;
+  group.path(str1).fill('none').stroke(amp.path);
+  group.path(str2).fill('none').stroke(amp.path);
+  
+  // text label
+  group.plain(label).font(amp.text).attr({ x: x-32, y: y+6 }).transform({ rotate: -90 });
+}
+
 // Resistor
 function addResistor(x, y, degrees, label, labelPosition) {
   let group = draw.group().attr({ class: 'resistor' });
@@ -52,16 +65,23 @@ function addPhoneJack(x, y, wire, degrees, flip) {
 }
 
 const ampSpecs = {
+  capacitors: [
+    { x: 449, y: 377, wire1: 35, wire2: 38, label: '25 - 25' },
+    { x: 857, y: 358, wire1: 30, wire2: 30, label: '25 - 25' },
+    { x: 748.5, y: 480, wire1: 25, wire2: 22, label: '8 - 450' },
+    { x: 926.5, y: 479, wire1: 25, wire2: 22, label: '8 - 450' },
+    { x: 1005, y: 478, wire1: 25, wire2: 22, label: '16 - 450' },
+  ],
   grounds: [
-    { x: 302, y: 424, wire: 90, rotate: 0 },
+    { x: 302, y: 425, wire: 91, rotate: 0 },
     { x: 473.3, y: 430, wire: 20, rotate: 0 },
     { x: 610, y: 379, wire: 11, rotate: 0 },
     { x: 668, y: 398, wire: 0, rotate: 0 },
-    { x: 744, y: 508, wire: 8, rotate: 0 },
+    { x: 744, y: 508, wire: 0, rotate: 0 },
     { x: 798, y: 372, wire: 8, rotate: 0 },
     { x: 871.3, y: 414, wire: 22, rotate: 0 },
-    { x: 922, y: 507, wire: 10, rotate: 0 },
-    { x: 1000, y: 507, wire: 10, rotate: 0 },
+    { x: 922, y: 507, wire: 0, rotate: 0 },
+    { x: 1000, y: 507, wire: 0, rotate: 0 },
     { x: 1035, y: 319, wire: 10, rotate: 0 },
     { x: 627.3, y: 683, wire: 10, rotate: 0 },
     { x: 750, y: 624, wire: 25, rotate: -90 },
@@ -91,6 +111,10 @@ const ampSpecs = {
 
 // Build the Amp
 function buildAmplifier() {
+  ampSpecs.capacitors.forEach(c => {
+    addCapacitor(c.x, c.y, c.wire1, c.wire2, c.label);
+  })
+
   ampSpecs.grounds.forEach(g => {
     addGround(g.x, g.y, g.wire, g.rotate);
   })
