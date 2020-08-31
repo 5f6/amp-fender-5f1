@@ -64,7 +64,7 @@ function addResistor(x, y, degrees, label, labelPosition) {
 
 // Phone Jack
 function addPhoneJack(x, y, wire, degrees, flip) {
-  let group = draw.group().attr({ class: 'jack' });
+  let group = draw.group().attr({ class: 'phone-jack' });
   let str = `M${x} ${y} l14 14 l14 -14 l${wire} 0`;
   group.path(str).fill('none').stroke(amp.path);
   group.transform({ rotate: degrees, flip: flip });
@@ -228,6 +228,16 @@ function eventListener() {
           s.remove();
         })
       }
+    }
+
+    if (event.target.matches('.highlighter')) {
+      event.target.classList.toggle('active');
+      const component = event.target.getAttribute('data-component');
+      const elements = document.querySelectorAll(`.${component}`);
+      
+      Array.from(elements).forEach(el => {
+        el.classList.toggle('highlighted');
+      })
     }
   
   }, false);

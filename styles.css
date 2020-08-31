@@ -9,6 +9,7 @@ body {
   background-position-x: center;
   background-repeat: no-repeat;
   background-size: contain;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: 16px;
   height: 100vh;
   margin: 0;
@@ -16,7 +17,6 @@ body {
 }
 
 header {
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   position: fixed;
   text-align: center;
   width: 100%;
@@ -39,6 +39,14 @@ h2 {
   z-index: 1;
 }
 
+#tools h6 {
+  color: #aaaaaa;
+  font-weight: normal;
+  font-size: .65rem;
+  margin: .5rem 0 0;
+  text-align: center;
+}
+
 #tools button {
   background: rgb(94, 80, 134);
   border: none;
@@ -51,11 +59,20 @@ h2 {
   text-transform: uppercase;
 }
 
-#tools button:hover {
+#tools button:hover,
+#tools button.active:hover {
   background: rgb(69, 54, 109);
 }
 
+#tools button.active {
+  background: rgb(38, 25, 75);
+}
+
 .signal path {
-  /* filter: drop-shadow(0 0 4px rgb(70, 189, 70)); */
   filter: drop-shadow(0 0 3px rgb(40, 236, 40));
+}
+
+.highlighted path {
+  stroke: rgb(255, 0, 191);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 0, 0.425));
 }
