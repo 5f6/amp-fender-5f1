@@ -6,6 +6,15 @@
 
 - [How amps work](https://robrobinette.com/How_Amps_Work.htm)
 
+### SVG.js
+
+- [Documentation](https://svgjs.com/docs/3.0/)
+
+### SVG Symbols
+
+- [Resistor](https://commons.wikimedia.org/wiki/File:Resistor_symbol_America.svg)
+- [Sine Wave](https://commons.wikimedia.org/wiki/File:Sine_wave_2.svg)
+
 ### Curveto
 
 Requires three coordinates: start control point, end control point, final point
