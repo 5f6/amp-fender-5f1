@@ -1,20 +1,26 @@
 // Amplifier Schematic
 // 5F1 schematic from https://robrobinette.com/How_Amps_Work.htm
 
+const nightMode = true;
+
 const amp = {
   path: {
-    // color: 'rgba(255, 255, 255, 0.667)',
-    // color: '#444',
-    color: 'green',
+    color: nightMode ? 'rgba(255, 255, 255, 0.5)' : 'green',
     linecap: 'round',
     linejoin: 'round',
     width: 1.5
+  },
+  pathSignal: {
+    color: nightMode ? '#30d730' : 'blue',
+    linecap: 'round',
+    linejoin: 'round',
+    width: nightMode ? 3 : 2
   },
   text: {
     family: 'Helvetica, sans-serif',
     style: 'italic',
     size: 15,
-    fill: 'green'
+    fill: nightMode ? 'rgba(255, 255, 255, 0.222)' : 'green',
   }
 }
 
@@ -64,6 +70,64 @@ function addPhoneJack(x, y, wire, degrees, flip) {
   group.transform({ rotate: degrees, flip: flip });
 }
 
+// Signal
+function signal(x, y, a, f, length, rotate) {
+  // a = amplitude
+  // f = frequency
+
+  // start control point, end control point, final point
+  // helpful article on curveto
+  // https://www.sitepoint.com/html5-svg-cubic-curves/
+  // https://blogs.sitepointstatic.com/examples/tech/svg-curves/cubic-curve.html
+
+  // f = f * 2 * 3.14;
+  
+  let group = draw.group().attr({ class: 'signal' });
+
+  let cycles = length / f;
+
+  let str = `M${x} ${y} `;
+  let plot = `M${x} ${y} `;
+
+  for (let i = 1; i < cycles + 1; i++) {
+    let cycle = i * f;
+    if (cycle < length) {
+      str += `c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0 `;
+    }
+    if (cycle < length) {
+      str += `c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`;
+    }
+    if (cycle < length) {
+      plot += `c ${f/4*.8} -${a/2}, ${f/4*1.2} -${a/2}, ${f/2} 0 `;
+    }
+    if (cycle < length) {
+      plot += `c ${f/4*.8} ${a/2}, ${f/4*1.2} ${a/2}, ${f/2} 0`;
+    }
+  }
+  group.path(str)
+    .fill('none')
+    .stroke(amp.pathSignal)
+    .transform({ rotate: rotate })
+    .animate({
+      duration: 1000,
+      swing: true,
+      ease: 'beziere(cubic-bezier(0.05, 0.95, 0.66, 0.79))',
+      times: Infinity,
+      wait: 200
+    })
+    .plot(plot)
+
+  // group.path(str)
+  //   .fill('none')
+  //   .stroke(amp.pathSignal)
+  //   .transform({ rotate: rotate })
+  //   .animate(duration)
+  //   .ease('>')
+  //   .plot(plot)
+  //   .loop(true, true);
+
+}
+
 const ampSpecs = {
   capacitors: [
     { x: 449, y: 377, wire1: 35, wire2: 38, label: '25 - 25' },
@@ -106,6 +170,14 @@ const ampSpecs = {
     { x: 270, y: 255, wire: 56, rotate: 0, flip: false },
     { x: 270, y: 333, wire: 56, rotate: 0, flip: false },
     { x: 1065, y: 265, wire: 20, rotate: 0, flip: 'x' }
+  ],
+  signal: [
+    { x: 270, y: 333, a: 6, f: 37, length: 151, rotate: 0 },
+    { x: 401, y: 314, a: 5, f: 36, length: 50, rotate: 90 },
+    { x: 420, y: 295, a: 5, f: 37, length: 100, rotate: 0 },
+    { x: 511, y: 280, a: 40, f: 37, length: 112, rotate: 0 },
+    { x: 707, y: 280, a: 40, f: 37, length: 190, rotate: 0 },
+    { x: 910, y: 251, a: 150, f: 37, length: 121, rotate: 0 },
   ]
 }
 
@@ -128,88 +200,44 @@ function buildAmplifier() {
   });
 }
 
+function eventListener() {
+  document.addEventListener('click', function (event) {
+
+    // toggle background
+    if (event.target.matches('#toggleBackground')) {
+      var element = document.querySelector('body'),
+            style = window.getComputedStyle(element),
+              bg = style.getPropertyValue('background-image');
+      if (bg == 'none') {
+        element.style.backgroundImage = 'url(./5F1_Annotated_Schematic.gif)';
+      } else {
+        element.style.backgroundImage = 'none';
+      }
+    }
+    
+    if (event.target.matches('#toggleSignal')) {
+      const elements = document.querySelectorAll('.signal');
+      
+      if (!elements.length > 0) {
+        ampSpecs.signal.forEach(s => {
+          signal(s.x, s.y, s.a, s.f, s.length, s.rotate);
+        });
+      } else {
+        Array.from(elements).forEach(s => {
+          s.remove();
+        })
+      }
+    }
+  
+  }, false);
+}
+
 SVG.on(document, 'DOMContentLoaded', function() {
   buildAmplifier();
+  eventListener();
   
-  function sine(x1, y1, amplitude, frequency, endPoint) {
-
-    // start control point, end control point, final point
-    // helpful article on curveto
-    // https://www.sitepoint.com/html5-svg-cubic-curves/
-    // https://blogs.sitepointstatic.com/examples/tech/svg-curves/cubic-curve.html
-
-    let a = amplitude;
-    let f = frequency;
-    let end = endPoint;
-    let x = x1;
-    let y = y1;
-    let duration = 1500;
-    
-    let group = draw.group().attr({ class: 'signal' });
-
-    let cycles = end / f;
-    for (let i = 0; i < cycles; i++) {
-      if (i > 0) {
-        x = i*f;
-      }
-      let str = `M${x} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`;
-      // let plot = i % 2 ? `M${x+f/2} ${y} c ${f/4*.8} -${a/2}, ${f/4*1.2} -${a/2}, ${f/2} 0` : `M${x+f/2} ${y} c ${f/4*.8} ${a/2}, ${f/4*1.2} ${a/2}, ${f/2} 0`;
-      
-      group.path(str)
-        .fill('none')
-        .stroke(amp.path)
-        // .animate(duration)
-        // .plot(plot)
-        // .loop(true, true);
-    }
-
-    // negative
-    // group.path(`M${x} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`)
-    //   .fill('none')
-    //   .stroke(amp.path)
-    //   .animate(duration)
-    //   .plot(`M${x} ${y} c ${f/4*.8} ${a/2}, ${f/4*1.2} ${a/2}, ${f/2} 0`)
-    //   .loop(true, true);
-    
-    // positive
-    // group.path(`M${x+f/2} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`)
-    //   .fill('none')
-    //   .stroke(amp.path)
-    //   .animate(duration)
-    //   .plot(`M${x+f/2} ${y} c ${f/4*.8} -${a/2}, ${f/4*1.2} -${a/2}, ${f/2} 0`)
-    //   .loop(true, true);
-
+  // development only
+  if (nightMode) {
+    document.querySelector('body').style.cssText = 'background-image: none; background: #111;';
   }
-  sine(10, 250, 10, 20, 1000);
-
-
 });
-
-// Command 	Name 	Parameters
-// M 	moveto 	(x y)+
-// Z 	closepath 	(none)
-// L 	lineto 	(x y)+
-// H 	horizontal lineto 	x+
-// V 	vertical lineto 	y+
-// C 	curveto 	(x1 y1 x2 y2 x y)+
-// S 	smooth curveto 	(x2 y2 x y)+
-// Q 	quadratic Bézier curveto 	(x1 y1 x y)+
-// T 	smooth quadratic Bézier curveto 	(x y)+
-// A 	elliptical arc 	(rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
-// R 	Catmull-Rom curveto* 	x1 y1 (x y)+
-
-document.addEventListener('click', function (event) {
-
-  // toggle background
-	if (event.target.matches('#toggleBackground')) {
-    var element = document.querySelector('body'),
-    style = window.getComputedStyle(element),
-    bg = style.getPropertyValue('background-image');
-    if (bg == 'none') {
-      element.style.backgroundImage = 'url(./5F1_Annotated_Schematic.gif)';
-    } else {
-      element.style.backgroundImage = 'none';
-    }
-	}
-
-}, false);

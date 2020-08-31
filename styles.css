@@ -27,9 +27,26 @@ h2 {
   margin: .05em 0 0;
 }
 
-#toggleBackground {
+#tools {
   position: absolute;
   top: 5px;
   left: 5px;
   z-index: 1;
+}
+
+#tools button {
+  background: #ddd;
+  border: none;
+  display: block;
+  min-width: 120px;
+  padding: 3px 6px;
+  margin: 2px 0;
+}
+
+#tools button:hover {
+  background: #ccc;
+}
+
+.signal path {
+  filter: drop-shadow(0 0 3px rgb(70, 189, 70));
 }
