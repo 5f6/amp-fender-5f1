@@ -2,6 +2,10 @@
 
 ## References
 
+### Fender 5F1 Schematic
+
+- [How amps work](https://robrobinette.com/How_Amps_Work.htm)
+
 ### Curveto
 
 Requires three coordinates: start control point, end control point, final point

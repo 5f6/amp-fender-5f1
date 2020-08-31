@@ -1,5 +1,4 @@
 // Amplifier Schematic
-// 5F1 schematic from https://robrobinette.com/How_Amps_Work.htm
 
 const nightMode = true;
 
