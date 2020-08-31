@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   /* background: #3c3c3c; */
   background: white;
@@ -8,6 +12,7 @@ body {
   font-size: 16px;
   height: 100vh;
   margin: 0;
+  overflow: hidden;
 }
 
 header {
@@ -35,18 +40,22 @@ h2 {
 }
 
 #tools button {
-  background: #ddd;
+  background: rgb(94, 80, 134);
   border: none;
+  border-radius: 2px;
+  color: #eeeeee;
   display: block;
   min-width: 120px;
-  padding: 3px 6px;
-  margin: 2px 0;
+  padding: 6px 12px;
+  margin: 4px 0;
+  text-transform: uppercase;
 }
 
 #tools button:hover {
-  background: #ccc;
+  background: rgb(69, 54, 109);
 }
 
 .signal path {
-  filter: drop-shadow(0 0 3px rgb(70, 189, 70));
+  /* filter: drop-shadow(0 0 4px rgb(70, 189, 70)); */
+  filter: drop-shadow(0 0 3px rgb(40, 236, 40));
 }

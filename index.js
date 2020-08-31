@@ -14,7 +14,7 @@ const amp = {
     color: nightMode ? '#30d730' : 'blue',
     linecap: 'round',
     linejoin: 'round',
-    width: nightMode ? 3 : 2
+    width: nightMode ? .5 : 2
   },
   text: {
     family: 'Helvetica, sans-serif',
@@ -116,6 +116,7 @@ function signal(x, y, a, f, length, rotate) {
       wait: 200
     })
     .plot(plot)
+    .stroke({ width: 1 })
 
   // group.path(str)
   //   .fill('none')
