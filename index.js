@@ -130,6 +130,59 @@ function buildAmplifier() {
 
 SVG.on(document, 'DOMContentLoaded', function() {
   buildAmplifier();
+  
+  function sine(x1, y1, amplitude, frequency, endPoint) {
+
+    // start control point, end control point, final point
+    // helpful article on curveto
+    // https://www.sitepoint.com/html5-svg-cubic-curves/
+    // https://blogs.sitepointstatic.com/examples/tech/svg-curves/cubic-curve.html
+
+    let a = amplitude;
+    let f = frequency;
+    let end = endPoint;
+    let x = x1;
+    let y = y1;
+    let duration = 1500;
+    
+    let group = draw.group().attr({ class: 'signal' });
+
+    let cycles = end / f;
+    for (let i = 0; i < cycles; i++) {
+      if (i > 0) {
+        x = i*f;
+      }
+      let str = `M${x} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`;
+      // let plot = i % 2 ? `M${x+f/2} ${y} c ${f/4*.8} -${a/2}, ${f/4*1.2} -${a/2}, ${f/2} 0` : `M${x+f/2} ${y} c ${f/4*.8} ${a/2}, ${f/4*1.2} ${a/2}, ${f/2} 0`;
+      
+      group.path(str)
+        .fill('none')
+        .stroke(amp.path)
+        // .animate(duration)
+        // .plot(plot)
+        // .loop(true, true);
+    }
+
+    // negative
+    // group.path(`M${x} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`)
+    //   .fill('none')
+    //   .stroke(amp.path)
+    //   .animate(duration)
+    //   .plot(`M${x} ${y} c ${f/4*.8} ${a/2}, ${f/4*1.2} ${a/2}, ${f/2} 0`)
+    //   .loop(true, true);
+    
+    // positive
+    // group.path(`M${x+f/2} ${y} c ${f/4*.8} 0, ${f/4*1.2} 0, ${f/2} 0`)
+    //   .fill('none')
+    //   .stroke(amp.path)
+    //   .animate(duration)
+    //   .plot(`M${x+f/2} ${y} c ${f/4*.8} -${a/2}, ${f/4*1.2} -${a/2}, ${f/2} 0`)
+    //   .loop(true, true);
+
+  }
+  sine(10, 250, 10, 20, 1000);
+
+
 });
 
 // Command 	Name 	Parameters
