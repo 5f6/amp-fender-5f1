@@ -74,13 +74,6 @@ function addPhoneJack(x, y, wire, degrees, flip) {
 function signal(x, y, a, f, length, rotate) {
   // a = amplitude
   // f = frequency
-
-  // start control point, end control point, final point
-  // helpful article on curveto
-  // https://www.sitepoint.com/html5-svg-cubic-curves/
-  // https://blogs.sitepointstatic.com/examples/tech/svg-curves/cubic-curve.html
-
-  // f = f * 2 * 3.14;
   
   let group = draw.group().attr({ class: 'signal' });
 
