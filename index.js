@@ -4,13 +4,13 @@ const nightMode = true;
 
 const amp = {
   path: {
-    color: nightMode ? 'rgba(255, 255, 255, 0.5)' : 'green',
+    color: '#777777',
     linecap: 'round',
     linejoin: 'round',
     width: 1.5
   },
   pathSignal: {
-    color: nightMode ? '#30d730' : 'blue',
+    color: '#30d730',
     linecap: 'round',
     linejoin: 'round',
     width: nightMode ? .5 : 2
@@ -19,11 +19,47 @@ const amp = {
     family: 'Helvetica, sans-serif',
     style: 'italic',
     size: 15,
-    fill: nightMode ? 'rgba(255, 255, 255, 0.222)' : 'green',
+    fill: nightMode ? 'rgba(255, 255, 255, 0.222)' : '#bbbbbb',
   }
 }
 
 let draw = SVG().addTo('body').size('100%', '100%');
+
+// A/C Input
+const addAC = () => {
+  let g = draw.group().attr({ class: 'plug' });
+  
+  // housing
+  g.path('M 368 634 l 0 -34 c 24 0, 24 34, 0 34').fill('none').stroke(amp.path);
+  
+  // prongs
+  g.path('M 353 610 l 14 0').fill('none').stroke(amp.path);
+  g.path('M 353 623 l 14 0').fill('none').stroke(amp.path);
+  
+  // wires
+  g.path('M 385 610 l 72 0, 74 -45, 78 0').fill('none').stroke(amp.path);
+  g.path('M 385 623 l 223 0').fill('none').stroke(amp.path);
+
+  // points
+  g.circle(6).fill(amp.path.color).move(604, 562);
+  g.circle(6).fill(amp.path.color).move(604, 620);
+  g.circle(6).fill(amp.path.color).move(636, 562);
+  g.circle(6).fill(amp.path.color).move(636, 620);
+
+  // switch
+  g.path('M 608 565 l 26 -13, -6 -1, 6 1, -3 6').fill('none').stroke(amp.path)
+    // .animate({
+    //   duration: 2000,
+    //   swing: true,
+    //   ease: 'beziere(cubic-bezier(0.05, 0.95, 0.66, 0.79))',
+    //   times: Infinity,
+    //   wait: 600
+    // })
+    // .plot('M 608 565 l 32 0, -4 -4, 4 4, -4 4');
+
+  // fuse
+  g.path('M 608 623 c 15 -15, 15 15, 30 0').fill('none').stroke(amp.path);
+}
 
 // Ground
 function addGround(x, y, wire, rotate) {
@@ -33,9 +69,9 @@ function addGround(x, y, wire, rotate) {
 }
 
 // Capacitor
-function addCapacitor(x, y, wire1, wire2, label, labelPosition) {
+function addCapacitor(x, y, wire1, wire2, label, designation) {
   // symbol
-  let group = draw.group().attr({ class: 'capacitor' });
+  let group = draw.group().attr({ class: 'capacitor', title: designation });
   let str1 = `M${x} ${y} l7 0 l0 -${wire1} l0 ${wire1} l7 0`;
   let str2 = `M${x} ${y + 6} l7 0 l0 ${wire2} l0 -${wire2} l7 0`;
   group.path(str1).fill('none').stroke(amp.path);
@@ -43,6 +79,14 @@ function addCapacitor(x, y, wire1, wire2, label, labelPosition) {
   
   // text label
   group.plain(label).font(amp.text).attr({ x: x-32, y: y+6 }).transform({ rotate: -90 });
+}
+
+// Phone Jack
+function addPhoneJack(x, y, wire, degrees, flip) {
+  let group = draw.group().attr({ class: 'phone-jack' });
+  let str = `M${x} ${y} l14 14 l14 -14 l${wire} 0`;
+  group.path(str).fill('none').stroke(amp.path);
+  group.transform({ rotate: degrees, flip: flip });
 }
 
 // Resistor
@@ -59,14 +103,6 @@ function addResistor(x, y, degrees, label, labelPosition) {
   let textAttrs = labelPosition === 'bottom' && degrees === -90 ? { x: x+12, y: y+18 } : { x: x+15, y: y-10 };
   group.plain(label).font(amp.text).attr(textAttrs);
   group.transform({ rotate: degrees });
-}
-
-// Phone Jack
-function addPhoneJack(x, y, wire, degrees, flip) {
-  let group = draw.group().attr({ class: 'phone-jack' });
-  let str = `M${x} ${y} l14 14 l14 -14 l${wire} 0`;
-  group.path(str).fill('none').stroke(amp.path);
-  group.transform({ rotate: degrees, flip: flip });
 }
 
 // Signal
@@ -103,9 +139,10 @@ function signal(x, y, a, f, length, rotate) {
     .animate({
       duration: 1000,
       swing: true,
-      ease: 'beziere(cubic-bezier(0.05, 0.95, 0.66, 0.79))',
+      // ease: 'beziere(cubic-bezier(0.05, 0.95, 0.66, 0.79))',
+      ease: 'step(5, "jump-end")',
       times: Infinity,
-      wait: 200
+      wait: 400
     })
     .plot(plot)
     .stroke({ width: 1 })
@@ -123,11 +160,11 @@ function signal(x, y, a, f, length, rotate) {
 
 const ampSpecs = {
   capacitors: [
-    { x: 449, y: 377, wire1: 35, wire2: 38, label: '25 - 25' },
-    { x: 857, y: 358, wire1: 30, wire2: 30, label: '25 - 25' },
-    { x: 748.5, y: 480, wire1: 25, wire2: 22, label: '8 - 450' },
-    { x: 926.5, y: 479, wire1: 25, wire2: 22, label: '8 - 450' },
-    { x: 1005, y: 478, wire1: 25, wire2: 22, label: '16 - 450' },
+    { x: 449, y: 377, wire1: 35, wire2: 38, label: '25 - 25', desig: 'C1' },
+    { x: 857, y: 358, wire1: 30, wire2: 30, label: '25 - 25', desig: 'C2' },
+    { x: 748.5, y: 480, wire1: 25, wire2: 22, label: '8 - 450', desig: 'C3' },
+    { x: 926.5, y: 479, wire1: 25, wire2: 22, label: '8 - 450', desig: 'C4' },
+    { x: 1005, y: 478, wire1: 25, wire2: 22, label: '16 - 450', desig: 'C5' },
   ],
   grounds: [
     { x: 302, y: 425, wire: 91, rotate: 0 },
@@ -140,7 +177,7 @@ const ampSpecs = {
     { x: 922, y: 507, wire: 0, rotate: 0 },
     { x: 1000, y: 507, wire: 0, rotate: 0 },
     { x: 1035, y: 319, wire: 10, rotate: 0 },
-    { x: 627.3, y: 683, wire: 10, rotate: 0 },
+    { x: 628, y: 683, wire: 60, rotate: 0 },
     { x: 750, y: 624, wire: 25, rotate: -90 },
     { x: 756, y: 677, wire: 36, rotate: -90 }
   ],
@@ -176,21 +213,23 @@ const ampSpecs = {
 
 // Build the Amp
 function buildAmplifier() {
+  addAC();
+
   ampSpecs.capacitors.forEach(c => {
-    addCapacitor(c.x, c.y, c.wire1, c.wire2, c.label);
+    addCapacitor(c.x, c.y, c.wire1, c.wire2, c.label, c.desig);
   })
 
   ampSpecs.grounds.forEach(g => {
     addGround(g.x, g.y, g.wire, g.rotate);
   })
-
-  ampSpecs.resistors.forEach(res => {
-    addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
-  })
   
   ampSpecs.phoneJacks.forEach(ph => {
     addPhoneJack(ph.x, ph.y, ph.wire, ph.rotate, ph.flip);
   });
+
+  ampSpecs.resistors.forEach(res => {
+    addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
+  })
 }
 
 function eventListener() {
