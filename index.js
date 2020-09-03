@@ -1,6 +1,6 @@
 // Amplifier Schematic
 
-const nightMode = true;
+const nightMode = false;
 
 const amp = {
   path: {
@@ -16,38 +16,49 @@ const amp = {
     width: nightMode ? .5 : 2
   },
   text: {
-    family: 'Helvetica, sans-serif',
+    family: '"Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif',
     style: 'italic',
-    size: 15,
-    fill: nightMode ? 'rgba(255, 255, 255, 0.222)' : '#bbbbbb',
+    size: 12,
+    fill: nightMode ? 'rgba(255, 255, 255, 0.444)' : '#888888',
   }
 }
 
 let draw = SVG().addTo('body').size('100%', '100%');
 
-// A/C Input
+// AC Input
 const addAC = () => {
-  let g = draw.group().attr({ class: 'plug' });
+  /**
+   * AC Plug
+   */
+  let plug = draw.group().attr({ class: 'plug' });
+  plug.text('AC PLUG').font(amp.text).move(390, 630);
   
   // housing
-  g.path('M 368 634 l 0 -34 c 24 0, 24 34, 0 34').fill('none').stroke(amp.path);
+  plug.path('M 368 634 l 0 -34 c 24 0, 24 34, 0 34').fill('none').stroke(amp.path);
   
   // prongs
-  g.path('M 353 610 l 14 0').fill('none').stroke(amp.path);
-  g.path('M 353 623 l 14 0').fill('none').stroke(amp.path);
+  plug.path('M 353 610 l 14 0').fill('none').stroke(amp.path);
+  plug.path('M 353 623 l 14 0').fill('none').stroke(amp.path);
   
   // wires
-  g.path('M 385 610 l 72 0, 74 -45, 78 0').fill('none').stroke(amp.path);
-  g.path('M 385 623 l 223 0').fill('none').stroke(amp.path);
+  plug.path('M 385 610 l 72 0, 74 -45, 78 0').fill('none').stroke(amp.path);
+  plug.path('M 385 623 l 223 0').fill('none').stroke(amp.path);
+  plug.path('M 638 565 l 66 0').fill('none').stroke(amp.path);
+  plug.path('M 638 623 l 66 0').fill('none').stroke(amp.path);
 
   // points
-  g.circle(6).fill(amp.path.color).move(604, 562);
-  g.circle(6).fill(amp.path.color).move(604, 620);
-  g.circle(6).fill(amp.path.color).move(636, 562);
-  g.circle(6).fill(amp.path.color).move(636, 620);
+  plug.circle(6).fill(amp.path.color).move(702, 562);
+  plug.circle(6).fill(amp.path.color).move(702, 620);
 
+  /**
+   * A/C Switch
+   */
   // switch
-  g.path('M 608 565 l 26 -13, -6 -1, 6 1, -3 6').fill('none').stroke(amp.path)
+  let sw = draw.group().attr({ class: 'switch' });
+  sw.text('AC SWITCH').font(amp.text).move(580, 572);
+  sw.circle(6).fill(amp.path.color).move(604, 562);
+  sw.circle(6).fill(amp.path.color).move(636, 562);
+  sw.path('M 608 565 l 26 -13, -6 -1, 6 1, -3 6').fill('none').stroke(amp.path)
     // .animate({
     //   duration: 2000,
     //   swing: true,
@@ -57,8 +68,14 @@ const addAC = () => {
     // })
     // .plot('M 608 565 l 32 0, -4 -4, 4 4, -4 4');
 
-  // fuse
-  g.path('M 608 623 c 15 -15, 15 15, 30 0').fill('none').stroke(amp.path);
+  /**
+   * Fuse
+   */
+  let fuse = draw.group().attr({ class: 'fuse' });
+  fuse.text('2 AMP FUSE').font(amp.text).move(580, 600);
+  fuse.path('M 608 623 c 15 -15, 15 15, 30 0').fill('none').stroke(amp.path);
+  fuse.circle(6).fill(amp.path.color).move(604, 620);
+  fuse.circle(6).fill(amp.path.color).move(636, 620);
 }
 
 // Ground
@@ -158,6 +175,47 @@ function signal(x, y, a, f, length, rotate) {
 
 }
 
+const addTransformers = () => {
+  const g = draw.group().attr({ class: 'transformer--power' });
+  
+  /**
+   * Power Transformer
+   */
+  // primary
+  const x = 9, y = 14.4;
+  const curves2 = `c ${x} 0, ${x} ${y}, 0 ${y} c ${x} 0, ${x} ${y}, 0 ${y}`;
+  const curves4 = `c ${x} 0, ${x} ${y}, 0 ${y} c ${x} 0, ${x} ${y}, 0 ${y} c ${x} 0, ${x} ${y}, 0 ${y} c ${x} 0, ${x} ${y}, 0 ${y}`;
+  g.path(`M 707 565 ${curves4}`).fill('none').stroke(amp.path);
+
+  // core
+  g.path('M 718 547 l 0 148').fill('none').stroke(amp.path);
+  g.path('M 724 547 l 0 148').fill('none').stroke(amp.path);
+
+  // secondary -- 5v
+  g.text('5V AC').font(amp.text).move(738, 553);
+  g.path(`M 729 546 ${curves2}`).fill('none').stroke(amp.path).rotate(180);
+  g.circle(6).fill(amp.path.color).move(735, 543);
+  g.circle(6).fill(amp.path.color).move(735, 572);
+  g.path('M 738 546 l 300 0').fill('none').stroke(amp.path);
+  g.path('M 738 575 l 270 0, 0 34, -134 0, -18 12, 18 12, 165 0, 0 -87').fill('none').stroke(amp.path);
+
+  // secondary -- high voltage
+  g.path(`M 729 592 ${curves2}`).fill('none').stroke(amp.path).rotate(180);
+  g.path(`M 729 621 ${curves2}`).fill('none').stroke(amp.path).rotate(180);
+  g.circle(6).fill(amp.path.color).move(735, 589);
+  g.circle(6).fill(amp.path.color).move(735, 618);
+  g.circle(6).fill(amp.path.color).move(735, 647);
+  g.path('M 739 592 l 87 15').fill('none').stroke(amp.path);
+  g.path('M 739 650 l 87 -15').fill('none').stroke(amp.path);
+
+  // secondary -- heaters
+  g.text('6.3V AC').font(amp.text).move(738, 680);
+  g.path(`M 729 668 ${curves2}`).fill('none').stroke(amp.path).rotate(180);
+  g.circle(6).fill(amp.path.color).move(735, 665);
+  g.circle(6).fill(amp.path.color).move(735, 694);
+  g.path('M 737 697 l 65 0, -4 -4, 4 4, -4 4').fill('none').stroke(amp.path);
+}
+
 const ampSpecs = {
   capacitors: [
     { x: 449, y: 377, wire1: 35, wire2: 38, label: '25 - 25', desig: 'C1' },
@@ -178,7 +236,7 @@ const ampSpecs = {
     { x: 1000, y: 507, wire: 0, rotate: 0 },
     { x: 1035, y: 319, wire: 10, rotate: 0 },
     { x: 628, y: 683, wire: 60, rotate: 0 },
-    { x: 750, y: 624, wire: 25, rotate: -90 },
+    { x: 747, y: 627, wire: 30, rotate: -90 },
     { x: 756, y: 677, wire: 36, rotate: -90 }
   ],
   resistors: [
@@ -213,15 +271,16 @@ const ampSpecs = {
 
 // Build the Amp
 function buildAmplifier() {
+
   addAC();
 
   ampSpecs.capacitors.forEach(c => {
     addCapacitor(c.x, c.y, c.wire1, c.wire2, c.label, c.desig);
-  })
+  });
 
   ampSpecs.grounds.forEach(g => {
     addGround(g.x, g.y, g.wire, g.rotate);
-  })
+  });
   
   ampSpecs.phoneJacks.forEach(ph => {
     addPhoneJack(ph.x, ph.y, ph.wire, ph.rotate, ph.flip);
@@ -229,7 +288,9 @@ function buildAmplifier() {
 
   ampSpecs.resistors.forEach(res => {
     addResistor(res.x, res.y, res.rotate, res.value, res.valuePosition);
-  })
+  });
+
+  addTransformers();
 }
 
 function eventListener() {
